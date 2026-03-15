@@ -1,0 +1,10 @@
+#pragma once
+#include <QApplication>
+#include <QMessageBox>
+#include <map>
+#include <string>
+#include <vector>
+#include <boost/algorithm/string.hpp>
+#include <iostream>
+#include "structs/journal_entry.hpp"
+#include "widgets/main_window.hpp"
