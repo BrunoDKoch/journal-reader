@@ -95,3 +95,19 @@ QString JournalModel::getOldestCursor() {
 QString JournalModel::getNewestCursor() {
 	return _entries.first().cursor;
 }
+
+QString JournalModel::getFullData(const QModelIndex& index) {
+	const auto& e = _entries[index.row()];
+	QString fullData = "Timestamp: " + e.timestamp + "\n" + "Priority level: " + e.priority + "\n" + "Hostname: " + e.hostname + "\n" + "Unit: " + e.unit + "\n" + "Message: " + e.message;
+	return fullData;
+}
+
+QString JournalModel::getExtraDetails(const QModelIndex& index) {
+	const auto& e = _entries[index.row()];
+	QString details;
+	if (e.extra.count()) details += "\n";
+	for (auto [k, v] : e.extra.asKeyValueRange()) {
+		details += k + " : " + v + "\n";
+	}
+	return details;
+}

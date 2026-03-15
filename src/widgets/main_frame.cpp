@@ -12,6 +12,8 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	connect(_pageWidget, &PageWidget::pageSet, this, &MainFrame::updateCursor);
 	_table->setModel(_model);
 	_table->horizontalHeader()->setStretchLastSection(true);
+	_table->setSelectionBehavior(QAbstractItemView::SelectRows);
+	connect(_table, &QTableView::doubleClicked, this, &MainFrame::showDetails);
 	layout->addWidget(filterFrame);
 	layout->addWidget(_table, 20);
 	layout->addWidget(_pageWidget);
@@ -122,6 +124,13 @@ void MainFrame::readOutput() {
 	}
 	_newestCursor = _model->getNewestCursor();
 	_oldestCursor = _model->getOldestCursor();
+}
+
+void MainFrame::showDetails(const QModelIndex& index) {
+	const auto data = _model->getFullData(index);
+	const auto details = _model->getExtraDetails(index);
+	DetailsView* detailsView = new DetailsView(data, details);
+	detailsView->show();
 }
 
 MainFrame::~MainFrame() = default;

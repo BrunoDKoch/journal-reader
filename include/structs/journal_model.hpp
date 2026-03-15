@@ -24,6 +24,9 @@ public:
 	QString getOldestCursor();
 	QString getNewestCursor();
 
+	QString getFullData(const QModelIndex& index);
+	QString getExtraDetails(const QModelIndex& index);
+
 private:
 	QVector<JournalEntry> _entries;
 };

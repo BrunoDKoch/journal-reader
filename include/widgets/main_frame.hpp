@@ -3,6 +3,7 @@
 #include "structs/journal_model.hpp"
 #include "widgets/filter_frame.hpp"
 #include "widgets/page_widget.hpp"
+#include "widgets/details_view.hpp"
 
 class MainFrame : public QFrame {
 	Q_OBJECT
@@ -16,6 +17,7 @@ private slots:
 	void setFilterStringList(const QStringList& list);
 	void updateCursor(int page);
 	void updateNumberOfItems(int numberOfItems);
+	void showDetails(const QModelIndex& index);
 
 private:
 	QTableView* _table;
