@@ -29,6 +29,8 @@ qt_add_executable(
 	src/widgets/page_widget.cpp
 	include/widgets/details_view.hpp
 	src/widgets/details_view.cpp
+	include/widgets/boot_widget.hpp
+	src/widgets/boot_widget.cpp
 )
 
 target_include_directories(journal-reader PRIVATE ${CMAKE_SOURCE_DIR}/include)

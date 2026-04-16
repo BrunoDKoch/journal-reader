@@ -7,16 +7,20 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	connect(filterFrame, &FilterFrame::update, this, &MainFrame::setFilterStringList);
 	_table = new QTableView(this);
 	_model = new JournalModel(this);
-	_pageWidget = new PageWidget(this);
-	connect(_pageWidget, &PageWidget::numberOfDisplayedItemsSet, this, &MainFrame::updateNumberOfItems);
-	connect(_pageWidget, &PageWidget::pageSet, this, &MainFrame::updateCursor);
+	_bootWidget = new BootWidget(this, _boot);
+	connect(_bootWidget, &BootWidget::bootSet, this, &MainFrame::updateBoot);
 	_table->setModel(_model);
 	_table->horizontalHeader()->setStretchLastSection(true);
 	_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	connect(_table, &QTableView::doubleClicked, this, &MainFrame::showDetails);
+	_progressBar = new QProgressBar(this);
+	_progressBar->setRange(0, 0);
+	_progressBar->setTextVisible(false);
+	_progressBar->setVisible(false);
 	layout->addWidget(filterFrame);
 	layout->addWidget(_table, 20);
-	layout->addWidget(_pageWidget);
+	layout->addWidget(_progressBar, 20);
+	layout->addWidget(_bootWidget);
 	setLayout(layout);
 	_process = new QProcess(this);
 	connect(_process, &QProcess::readyReadStandardOutput, this, &MainFrame::readOutput);
@@ -49,32 +53,52 @@ void MainFrame::setFilterStringList(const QStringList& list) {
 	reload();
 }
 
+void MainFrame::updateBoot(int boot) {
+	_boot = boot;
+	reload();
+}
+
+void MainFrame::toggleProgressVisibility() {
+	_table->setVisible(!_table->isVisible());
+	_progressBar->setVisible(!_progressBar->isVisible());
+}
+
 void MainFrame::reload() {
 	if (_process->state() != QProcess::NotRunning)
 		_process->kill();
 	_model->clear();
-	QStringList args = _filterStringList;
+	QStringList args;
+	args += _filterStringList;
 	for (auto& item : _defaultArgs) {
 		args.append(item);
 	}
-	
-	if (_moveToNextPage) {
+
+	/*if (_moveToNextPage) {
 		args.append("--after-cursor");
 		args.append(_newestCursor);
-	} else if (_moveToPreviousPage) {
-		args.append("--before-cursor");
+	} else if (_moveToPreviousPage && _page > 1) {
+		args.append("--cursor");
 		args.append(_oldestCursor);
 	}
+
 	args.append("-n");
-	args.append(std::to_string(_numberOfItems).c_str());
+	args.append(std::to_string(_numberOfItems).c_str());*/
+	auto bootStr = std::to_string(_boot);
+	if (_boot != 0) {
+		bootStr = "-" + bootStr;
+	}
+	args.append(("-b" + bootStr).c_str());
 	for (auto& arg : args) {
 		qDebug() << arg << " ";
 	}
+	toggleProgressVisibility();
+
 	_process->start("journalctl", args);
 	_process->waitForFinished();
 	_moveToNextPage = false;
 	_moveToPreviousPage = false;
 	_table->viewport()->update();
+	toggleProgressVisibility();
 }
 
 void MainFrame::readOutput() {

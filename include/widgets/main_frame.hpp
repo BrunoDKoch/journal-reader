@@ -4,6 +4,7 @@
 #include "widgets/filter_frame.hpp"
 #include "widgets/page_widget.hpp"
 #include "widgets/details_view.hpp"
+#include "widgets/boot_widget.hpp"
 
 class MainFrame : public QFrame {
 	Q_OBJECT
@@ -18,6 +19,8 @@ private slots:
 	void updateCursor(int page);
 	void updateNumberOfItems(int numberOfItems);
 	void showDetails(const QModelIndex& index);
+	void updateBoot(int boot);
+	void toggleProgressVisibility();
 
 private:
 	QTableView* _table;
@@ -26,8 +29,11 @@ private:
 	QStringList _filterStringList;
 	QStringList _defaultArgs;
 	PageWidget* _pageWidget;
+	BootWidget* _bootWidget;
+	QProgressBar* _progressBar;
 	int _page = 1;
 	int _numberOfItems = 50;
+	int _boot = 0;
 	QString _oldestCursor;
 	QString _newestCursor;
 	bool _moveToNextPage = false;
