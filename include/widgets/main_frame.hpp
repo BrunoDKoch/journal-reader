@@ -21,6 +21,7 @@ private slots:
 	void showDetails(const QModelIndex& index);
 	void updateBoot(int boot);
 	void toggleProgressVisibility();
+	void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
 	QTableView* _table;
@@ -31,6 +32,7 @@ private:
 	PageWidget* _pageWidget;
 	BootWidget* _bootWidget;
 	QProgressBar* _progressBar;
+	QFrame* _progressFrame;
 	int _page = 1;
 	int _numberOfItems = 50;
 	int _boot = 0;

@@ -13,24 +13,29 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	_table->horizontalHeader()->setStretchLastSection(true);
 	_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	connect(_table, &QTableView::doubleClicked, this, &MainFrame::showDetails);
+
 	_progressBar = new QProgressBar(this);
 	_progressBar->setRange(0, 0);
-	_progressBar->setTextVisible(false);
-	_progressBar->setVisible(false);
+	_progressFrame = new QFrame(this);
+	auto progressFrameLayout = new QHBoxLayout(_progressFrame);
+	progressFrameLayout->addWidget(_progressBar);
+	_progressFrame->setLayout(progressFrameLayout);
+
 	layout->addWidget(filterFrame);
 	layout->addWidget(_table, 20);
-	layout->addWidget(_progressBar, 20);
+	layout->addWidget(_progressFrame, 20);
 	layout->addWidget(_bootWidget);
 	setLayout(layout);
+	_table->setHidden(false);
+	_progressFrame->setHidden(true);
 	_process = new QProcess(this);
+	connect(_process, &QProcess::finished, this, &MainFrame::onProcessFinished);
 	connect(_process, &QProcess::readyReadStandardOutput, this, &MainFrame::readOutput);
-	QStringList args = _defaultArgs;
+	/*QStringList args = _defaultArgs;
 	args.append("-n");
 	args.append(std::to_string(_numberOfItems).c_str());
-	_process->start("journalctl", args);
-	_process->waitForFinished();
-	_newestCursor = _model->getNewestCursor();
-	_oldestCursor = _model->getOldestCursor();
+	_process->start("journalctl", args);*/
+	reload();
 }
 
 void MainFrame::updateCursor(int page) {
@@ -59,8 +64,19 @@ void MainFrame::updateBoot(int boot) {
 }
 
 void MainFrame::toggleProgressVisibility() {
-	_table->setVisible(!_table->isVisible());
-	_progressBar->setVisible(!_progressBar->isVisible());
+	_table->setHidden(!_table->isHidden());
+	_progressFrame->setHidden(!_progressFrame->isHidden());
+}
+
+void MainFrame::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+	toggleProgressVisibility();
+	if (exitStatus == QProcess::CrashExit) {
+		qDebug() << "Process crashed";
+		return;
+	}
+
+	// Update your view
+	_table->viewport()->update();
 }
 
 void MainFrame::reload() {
@@ -94,11 +110,6 @@ void MainFrame::reload() {
 	toggleProgressVisibility();
 
 	_process->start("journalctl", args);
-	_process->waitForFinished();
-	_moveToNextPage = false;
-	_moveToPreviousPage = false;
-	_table->viewport()->update();
-	toggleProgressVisibility();
 }
 
 void MainFrame::readOutput() {
@@ -153,7 +164,8 @@ void MainFrame::readOutput() {
 void MainFrame::showDetails(const QModelIndex& index) {
 	const auto data = _model->getFullData(index);
 	const auto details = _model->getExtraDetails(index);
-	DetailsView* detailsView = new DetailsView(data, details);
+	const auto icon = _model->revealIcon(index);
+	DetailsView* detailsView = new DetailsView(icon, data, details);
 	detailsView->show();
 }
 

@@ -56,6 +56,11 @@ QIcon JournalModel::getIcon(const QString& priorityString) {
 	}
 }
 
+QIcon JournalModel::revealIcon(const QModelIndex& index) {
+	const auto& e = _entries[index.row()];
+	return JournalModel::getIcon(e.priority);
+}
+
 QVariant JournalModel::data(const QModelIndex& index, int role) const {
 	if (!index.isValid())
 		return {};

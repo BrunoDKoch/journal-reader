@@ -27,6 +27,8 @@ public:
 	QString getFullData(const QModelIndex& index);
 	QString getExtraDetails(const QModelIndex& index);
 
+	QIcon revealIcon(const QModelIndex& index);
+
 private:
 	QVector<JournalEntry> _entries;
 };
