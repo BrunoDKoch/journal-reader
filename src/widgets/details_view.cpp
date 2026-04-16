@@ -2,6 +2,7 @@
 
 DetailsView::DetailsView(const QIcon& icon, const QString& data, const QString& details, QWidget* parent) {
 	setWindowIcon(icon);
+	setWindowTitle("Detailed event information");
 	QFrame* detailsFrame = new QFrame(this);
 
 	_textBrowser = new QTextBrowser(detailsFrame);

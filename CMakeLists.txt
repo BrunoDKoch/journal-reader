@@ -4,7 +4,6 @@ project(JournalReader VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -31,6 +30,10 @@ qt_add_executable(
 	src/widgets/details_view.cpp
 	include/widgets/boot_widget.hpp
 	src/widgets/boot_widget.cpp
+)
+
+target_compile_definitions(journal-reader PRIVATE
+	$<$<NOT:$<CONFIG:Debug>>:QT_NO_DEBUG_OUTPUT>
 )
 
 target_include_directories(journal-reader PRIVATE ${CMAKE_SOURCE_DIR}/include)

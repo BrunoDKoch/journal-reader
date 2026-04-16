@@ -16,7 +16,6 @@ private slots:
 	void readOutput();
 	void reload();
 	void setFilterStringList(const QStringList& list);
-	void updateCursor(int page);
 	void updateNumberOfItems(int numberOfItems);
 	void showDetails(const QModelIndex& index);
 	void updateBoot(int boot);
@@ -36,8 +35,4 @@ private:
 	int _page = 1;
 	int _numberOfItems = 50;
 	int _boot = 0;
-	QString _oldestCursor;
-	QString _newestCursor;
-	bool _moveToNextPage = false;
-	bool _moveToPreviousPage = false;
 };

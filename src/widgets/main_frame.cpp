@@ -10,6 +10,17 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	_bootWidget = new BootWidget(this, _boot);
 	connect(_bootWidget, &BootWidget::bootSet, this, &MainFrame::updateBoot);
 	_table->setModel(_model);
+
+	// Putting this here to be clear and avoid magic numbers
+	int timeColIndex = 0;
+	int timeColSize = 180;
+	_table->setColumnWidth(timeColIndex, timeColSize);
+	int priorityColIndex = 1;
+	int hostColIndex = 3;
+	int smallColSize = 100;
+	for (auto& index : { priorityColIndex, hostColIndex }) {
+		_table->setColumnWidth(index, smallColSize);
+	}
 	_table->horizontalHeader()->setStretchLastSection(true);
 	_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	connect(_table, &QTableView::doubleClicked, this, &MainFrame::showDetails);
@@ -38,16 +49,6 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	reload();
 }
 
-void MainFrame::updateCursor(int page) {
-	if (page < _page) {
-		_moveToPreviousPage = true;
-	} else if (page > _page) {
-		_moveToNextPage = true;
-	}
-	_page = page;
-	reload();
-}
-
 void MainFrame::updateNumberOfItems(int numberOfItems) {
 	_numberOfItems = numberOfItems;
 	reload();
@@ -71,7 +72,11 @@ void MainFrame::toggleProgressVisibility() {
 void MainFrame::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus) {
 	toggleProgressVisibility();
 	if (exitStatus == QProcess::CrashExit) {
-		qDebug() << "Process crashed";
+		auto const stderrMessage = _process->readAllStandardError().toStdString();
+		auto const errorMessage = "There was an error while fetching data from journalctl:\n" + stderrMessage + "\n\nExit code: " + std::to_string(exitCode);
+		qDebug() << errorMessage << "\n";
+		auto messageBox = QMessageBox(QMessageBox::Icon::Critical, "Error fetching journal data", QString::fromUtf8(errorMessage), QMessageBox::StandardButton::Ok, this);
+		messageBox.exec();
 		return;
 	}
 
@@ -89,16 +94,6 @@ void MainFrame::reload() {
 		args.append(item);
 	}
 
-	/*if (_moveToNextPage) {
-		args.append("--after-cursor");
-		args.append(_newestCursor);
-	} else if (_moveToPreviousPage && _page > 1) {
-		args.append("--cursor");
-		args.append(_oldestCursor);
-	}
-
-	args.append("-n");
-	args.append(std::to_string(_numberOfItems).c_str());*/
 	auto bootStr = std::to_string(_boot);
 	if (_boot != 0) {
 		bootStr = "-" + bootStr;
@@ -157,8 +152,6 @@ void MainFrame::readOutput() {
 		}
 		_model->appendEntry(e);
 	}
-	_newestCursor = _model->getNewestCursor();
-	_oldestCursor = _model->getOldestCursor();
 }
 
 void MainFrame::showDetails(const QModelIndex& index) {
