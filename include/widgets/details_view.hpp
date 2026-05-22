@@ -1,6 +1,6 @@
 #pragma once
 #include <QtWidgets>
-#include "structs/journal_model.hpp"
+#include "model/journal_model.hpp"
 
 class DetailsView : public QDialog {
 	Q_OBJECT

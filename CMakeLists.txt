@@ -22,7 +22,7 @@ qt_add_executable(
 	src/widgets/main_window.cpp
 	include/widgets/main_frame.hpp
 	src/widgets/main_frame.cpp
-	include/structs/journal_model.hpp
+	include/model/journal_model.hpp
 	src/journal_model.cpp
 	include/widgets/filter_frame.hpp
 	src/widgets/filter_frame.cpp

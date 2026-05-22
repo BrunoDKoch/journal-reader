@@ -1,6 +1,6 @@
 #pragma once
 
-#include "journal_entry.hpp"
+#include "structs/journal_entry.hpp"
 #include "enums/priority_enum.hpp"
 #include <QAbstractTableModel>
 #include <QIcon>

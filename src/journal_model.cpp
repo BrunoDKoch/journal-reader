@@ -1,4 +1,4 @@
-#include "structs/journal_model.hpp"
+#include "model/journal_model.hpp"
 
 JournalModel::JournalModel(QObject* parent)
 	: QAbstractTableModel(parent) {

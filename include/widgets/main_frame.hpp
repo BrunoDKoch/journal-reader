@@ -2,7 +2,7 @@
 #include <QtWidgets>
 #include <QShortcut>
 #include <QKeySequence>
-#include "structs/journal_model.hpp"
+#include "model/journal_model.hpp"
 #include "widgets/filter_frame.hpp"
 #include "widgets/page_widget.hpp"
 #include "widgets/details_view.hpp"
