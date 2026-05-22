@@ -17,9 +17,11 @@ private slots:
 	void selectSinceDate();
 	void selectUntilDate();
 	void selectPriority();
+	void submitFilterString();
 
 private:
-	QTextEdit* _stringEdit;
+	QLineEdit* _stringEdit;
+	QPushButton* _submitButton;
 	QComboBox* _prioritySelect;
 	PriorityEnum _priority;
 };

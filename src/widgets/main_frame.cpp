@@ -4,6 +4,7 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	_defaultArgs = { "-o", "json", "--no-pager" };
 	auto layout = new QVBoxLayout();
 	auto filterFrame = new FilterFrame();
+	_filterStringList = QStringList();
 	connect(filterFrame, &FilterFrame::update, this, &MainFrame::setFilterStringList);
 	_table = new QTableView(this);
 	_model = new JournalModel(this);
@@ -42,10 +43,6 @@ MainFrame::MainFrame(QWidget* parent) : QFrame(parent) {
 	_process = new QProcess(this);
 	connect(_process, &QProcess::finished, this, &MainFrame::onProcessFinished);
 	connect(_process, &QProcess::readyReadStandardOutput, this, &MainFrame::readOutput);
-	/*QStringList args = _defaultArgs;
-	args.append("-n");
-	args.append(std::to_string(_numberOfItems).c_str());
-	_process->start("journalctl", args);*/
 	reload();
 }
 
@@ -80,7 +77,6 @@ void MainFrame::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 		return;
 	}
 
-	// Update your view
 	_table->viewport()->update();
 }
 
@@ -89,7 +85,8 @@ void MainFrame::reload() {
 		_process->kill();
 	_model->clear();
 	QStringList args;
-	args += _filterStringList;
+	if (_filterStringList.size() != 0 && !_filterStringList.first().isEmpty())
+		args += _filterStringList;
 	for (auto& item : _defaultArgs) {
 		args.append(item);
 	}

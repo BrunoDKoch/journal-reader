@@ -9,8 +9,12 @@ FilterFrame::FilterFrame(QWidget* parent) {
 	connect(calendarSinceButton, &QPushButton::clicked, this, &FilterFrame::selectSinceDate);
 	connect(calendarUntilButton, &QPushButton::clicked, this, &FilterFrame::selectUntilDate);
 
-	_stringEdit = new QTextEdit(this);
+	_stringEdit = new QLineEdit(this);
+	_stringEdit->setPlaceholderText("Regular expression search");
 	_stringEdit->setMaximumHeight(28);
+	_submitButton = new QPushButton("Submit", this);
+	connect(_submitButton, &QPushButton::clicked, this, &FilterFrame::submitFilterString);
+	connect(_stringEdit, &QLineEdit::returnPressed, this, &FilterFrame::submitFilterString);
 	const QMetaObject* metaObj = &PriorityEnum::staticMetaObject;
 	int enumIndex = metaObj->indexOfEnumerator("Priority");
 	QMetaEnum metaEnum = metaObj->enumerator(enumIndex);
@@ -25,6 +29,7 @@ FilterFrame::FilterFrame(QWidget* parent) {
 	layout->addWidget(calendarSinceButton);
 	layout->addWidget(calendarUntilButton);
 	layout->addWidget(_stringEdit);
+	layout->addWidget(_submitButton);
 	layout->addWidget(_prioritySelect);
 	setLayout(layout);
 }
@@ -35,7 +40,7 @@ void FilterFrame::selectPriority() {
 		emit update({});
 		return;
 	}
-	emit update({"-p", std::to_string(index - 1).c_str()});
+	emit update({ "-p", std::to_string(index - 1).c_str() });
 }
 
 void FilterFrame::selectSinceDate() {
@@ -59,7 +64,7 @@ void FilterFrame::selectSinceDate() {
 	if (dialog.exec() == QDialog::Accepted) {
 		QString since = dateTimeEdit->dateTime().toString(Qt::ISODate);
 		qDebug() << "Since date selected:" << since;
-		const QStringList cmdList = {"--since", since };
+		const QStringList cmdList = { "--since", since };
 		emit sinceDateSelected(since);
 		emit update(cmdList);
 	}
@@ -86,10 +91,20 @@ void FilterFrame::selectUntilDate() {
 	if (dialog.exec() == QDialog::Accepted) {
 		QString until = dateTimeEdit->dateTime().toString(Qt::ISODate);
 		qDebug() << "Until date selected:" << until;
-		const QStringList cmdList = {"--until", until };
+		const QStringList cmdList = { "--until", until };
 		emit untilDateSelected(until);
 		emit update(cmdList);
 	}
+}
+
+void FilterFrame::submitFilterString() {
+	const auto pattern = _stringEdit->text();
+	if (pattern.isEmpty()) {
+		emit update({});
+		return;
+	}
+	const QStringList cmdList = { "-g", pattern };
+	emit update(cmdList);
 }
 
 
