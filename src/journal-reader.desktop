@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Journal Reader
+Exec=journal-reader
+Comment=A tool to display journalctl records on a GUI
+Terminal=false
+Categories=Utility;
