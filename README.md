@@ -26,6 +26,12 @@ You also cannot currently sort the items on the display table. This might change
 
 Double-clicking on a record will open a detailed view with all the fields saved by `journalctl`.
 
+You can also export logs by going to `File -> Export Logs...` or by pressing Ctrl + S. This will export all logs that are currently loaded.
+
+You can copy highlighted logs by going to `Edit -> Copy Selected` or by pressing Ctrl + C.
+
+Finally, you can refresh the page by going to `Edit -> Refresh` or by pressing F5.
+
 ## Compatibility
 
 Jornal Reader is only guaranteed to be compatible with Arch Linux and derivatives. While I can look into packaging this for Fedora and Debian eventually, I can't make any guarantees.

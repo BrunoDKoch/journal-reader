@@ -159,4 +159,77 @@ void MainFrame::showDetails(const QModelIndex& index) {
 	detailsView->show();
 }
 
+const QString MainFrame::getAllCurrentLogEntries() {
+	QAbstractItemModel* absModel = _table->model();
+	JournalModel* model = static_cast<JournalModel*>(absModel);
+	int rows = model->rowCount();
+
+	QString result = "";
+	for (int i = 0; i < rows; i++) {
+		auto index = model->index(i, 0);
+		result += model->getAsExportLogEntry(index) + "\n\n";
+	}
+	return result;
+}
+
+void MainFrame::exportLogs() {
+	QString destination = QDir::currentPath();
+	QFileInfo dirInfo(destination);
+	if (!dirInfo.isWritable()) {
+		destination = QDir::homePath();
+	}
+	destination += "/journal_export.log";
+	QString fileName = QFileDialog::getSaveFileName(
+		this,
+		tr("Export Journal Logs"),
+		destination,
+		tr("Log Files (*.log);;Text Files (*.txt);;All Files (*)")
+	);
+	if (fileName.isEmpty()) return;
+
+	QFile file(fileName);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		QMessageBox::critical(
+			this,
+			tr("Error"),
+			tr("Could not open file for writing: %1").arg(file.errorString())
+		);
+		return;
+	}
+	QTextStream out(&file);
+	QString logData = getAllCurrentLogEntries();
+	out << logData;
+
+	QMessageBox::information(
+		this,
+		tr("Success"),
+		tr("Logs successfully exported to:\n%1").arg(fileName)
+	);
+}
+
+void MainFrame::copySelectedLogs() {
+	QClipboard* clipboard = QGuiApplication::clipboard();
+	if (!clipboard) return;
+	QItemSelectionModel* selectionModel = _table->selectionModel();
+	if (!selectionModel || !selectionModel->hasSelection()) return;
+	QModelIndexList selectedIndexes = selectionModel->selectedIndexes();
+	if (selectedIndexes.isEmpty()) return;
+
+	QString copyText;
+
+	for (int i = 0; i < selectedIndexes.size(); i++) {
+		QModelIndex currentIndex = selectedIndexes.at(i);
+		copyText += currentIndex.data(Qt::DisplayRole).toString();
+		if (i + 1 < selectedIndexes.size()) {
+			QModelIndex next = selectedIndexes.at(i + 1);
+			if (next.row() == currentIndex.row()) {
+				copyText += "\t";
+			} else {
+				copyText += "\n";
+			}
+		}
+	}
+	clipboard->setText(copyText);
+}
+
 MainFrame::~MainFrame() = default;

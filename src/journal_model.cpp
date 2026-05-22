@@ -116,3 +116,13 @@ QString JournalModel::getExtraDetails(const QModelIndex& index) {
 	}
 	return details;
 }
+
+QString JournalModel::getAsExportLogEntry(const QModelIndex& index) {
+	const auto& e = _entries[index.row()];
+	QString result = QString("[%1] - [%2] - [%3 @ %4] - %5").arg(e.timestamp, e.priority, e.unit, e.hostname, e.message);
+	QString details = getExtraDetails(index);
+	if (!details.isEmpty()) {
+		result += details;
+	}
+	return result;
+}

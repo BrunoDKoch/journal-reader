@@ -1,5 +1,7 @@
 #pragma once
 #include <QtWidgets>
+#include <QShortcut>
+#include <QKeySequence>
 #include "structs/journal_model.hpp"
 #include "widgets/filter_frame.hpp"
 #include "widgets/page_widget.hpp"
@@ -12,15 +14,20 @@ public:
 	explicit MainFrame(QWidget* parent = nullptr);
 	~MainFrame();
 
+public slots:
+	void reload();
+	void exportLogs();
+	void copySelectedLogs();
+
 private slots:
 	void readOutput();
-	void reload();
 	void setFilterStringList(const QStringList& list);
 	void updateNumberOfItems(int numberOfItems);
 	void showDetails(const QModelIndex& index);
 	void updateBoot(int boot);
 	void toggleProgressVisibility();
 	void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	const QString getAllCurrentLogEntries();
 
 private:
 	QTableView* _table;

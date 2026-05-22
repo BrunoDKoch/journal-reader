@@ -26,6 +26,7 @@ public:
 
 	QString getFullData(const QModelIndex& index);
 	QString getExtraDetails(const QModelIndex& index);
+	QString getAsExportLogEntry(const QModelIndex& index);
 
 	QIcon revealIcon(const QModelIndex& index);
 
