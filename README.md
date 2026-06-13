@@ -38,4 +38,4 @@ Jornal Reader is only guaranteed to be compatible with Arch Linux and derivative
 
 As stated before, this is a hobby project, and both myself and the friends I made this for use either Arch Linux or a derivative like CachyOS.
 
-Plus, while Fedora and its derivatives tend to be relatively up-to-date with their packages, the Debian family of distros is more focused on stability. I
+Plus, while Fedora and its derivatives tend to be relatively up-to-date with their packages, the Debian family of distros is more focused on stability. I can't promise I'll be able to support them.
